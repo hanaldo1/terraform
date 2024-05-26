@@ -4,7 +4,11 @@
 - AWS Lambda
 - AWS EventBridge > Schedule
 
-![alt text](image.png)
+#### AWS 리소스 구성도
+![alt text](images/architecture.png)
+
+#### SLACK 메세지
+![alt text](images/slack.png)
 
 ## python 코드 테스트
 ### 의존성 설치
