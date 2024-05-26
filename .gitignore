@@ -38,3 +38,6 @@ terraform.rc
 .vscode
 
 test/
+builds/
+
+run.sh
