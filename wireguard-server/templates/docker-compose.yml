@@ -1,0 +1,39 @@
+services:
+  wg-easy:
+    environment:
+      # Change Language:
+      # (Supports: en, ua, ru, tr, no, pl, fr, de, ca, es, ko, vi, nl, is, pt, chs, cht, it, th, hi)
+      - LANG=ko
+      # ⚠️ Required:
+      - WG_HOST=<CHANGED_ME> # Change this to your host's public address
+
+      # Optional:
+      - PASSWORD=${ui_password}
+      - PORT=${ui_port}
+      - WG_PORT=${server_port}
+      - WG_DEFAULT_ADDRESS=${server_network}.x
+      - WG_DEFAULT_DNS=${server_network}.1
+      - WG_ALLOWED_IPS=${server_network}.0/24
+      - WG_PERSISTENT_KEEPALIVE=25
+      - WG_POST_UP=iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+      - WG_POST_DOWN=iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+      - UI_TRAFFIC_STATS=${ui_traffic_stats} # "true" or "false"
+      - UI_CHART_TYPE=${ui_chart_type} # (0 Charts disabled, 1 # Line chart, 2 # Area chart, 3 # Bar chart)
+
+    image: ghcr.io/wg-easy/wg-easy
+    container_name: wg-easy
+    volumes:
+      - wireguard:/etc/wireguard
+    ports:
+      - "${server_port}:${server_port}/udp"
+      - "${ui_port}:${ui_port}/tcp"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+
+volumes:
+    wireguard:

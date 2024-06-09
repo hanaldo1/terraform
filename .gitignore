@@ -41,3 +41,6 @@ test/
 builds/
 
 run.sh
+
+# Ignore lightsail keypair file
+wireguard-server/ssh
