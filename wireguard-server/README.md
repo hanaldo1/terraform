@@ -19,6 +19,10 @@
 
 > $ terraform apply
 
+### 고려 사항
+현재 Lightsail 인스턴스가 생성되고 내부적으로 도커가 실행될 때까지 약간의 시간이 소요되어, docker-compose 를 통한 wireguard 서버 실행 remote-exec 가 실패할 수 있음
+- 이럴 때는 다시 한번 terraform apply 를 통해 remote-exec 를 다시 실행해주면 정상적으로 wireguard 서버 실행까지 완료됨. 
+
 ## 3. wireguard UI 접근
 - `http://<Lightsail Static IP 주소>:51821`
 
