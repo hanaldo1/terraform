@@ -60,6 +60,13 @@ resource "aws_lightsail_instance_public_ports" "wireguard_server" {
     to_port = 22
     cidrs = var.public_access_allowed_ips
   }
+
+  port_info {
+    protocol = "udp"
+    from_port = 51820
+    to_port = 51820
+    cidrs = [ "0.0.0.0/0" ]
+  }
 }
 
 resource "null_resource" "set_up_wireguard" {
