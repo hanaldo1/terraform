@@ -16,3 +16,8 @@ variable "key_pair_name" {
   type = string
   default = "common-key"
 }
+
+variable "deploy_test_page" {
+  type = bool
+  default = false
+}

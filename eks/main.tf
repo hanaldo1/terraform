@@ -16,6 +16,7 @@ terraform {
 
 provider "aws" {}
 
+data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "aws_key_pair" "eks" {
@@ -32,8 +33,8 @@ module "network" {
   key_pair_name = data.aws_key_pair.eks.key_name
 }
 
-module "eks" {
-  source = "./eks"
+module "cluster" {
+  source = "./cluster"
   depends_on = [ module.network ]
 
   name = var.name
@@ -45,4 +46,23 @@ module "eks" {
   key_pair_name = data.aws_key_pair.eks.key_name
 
   account_id = data.aws_caller_identity.current.account_id
+}
+
+resource "null_resource" "update_kubeconfig" {
+  provisioner "local-exec" {
+    command = "aws eks --region ${data.aws_region.current.name} update-kubeconfig --name ${module.cluster.cluster_name}"
+  }
+}
+
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context_cluster = module.cluster.cluster_arn
+  config_context = module.cluster.cluster_arn
+}
+
+module "test-page" {
+  count = var.deploy_test_page ? 1 : 0
+
+  source = "./test-page"
+  depends_on = [ module.network, module.cluster, null_resource.update_kubeconfig ]
 }
