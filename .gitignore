@@ -44,3 +44,6 @@ run.sh
 
 # Ignore lightsail keypair file
 wireguard-server/ssh
+
+# Ignore keypair file
+*/ssh
