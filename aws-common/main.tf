@@ -16,10 +16,20 @@ terraform {
 
 provider "aws" {}
 
+
+/*
+ * SSH Key Pair
+ */
+
 resource "aws_key_pair" "common" {
   key_name = "common-key"
   public_key = file("${path.module}/ssh/id_rsa.pub")
 }
+
+
+/*
+ * IAM Role for EKS Cluster and Worker Node
+ */
 
 resource "aws_iam_role" "eks_cluster" {
   name = "eks-cluster-role"
@@ -71,4 +81,24 @@ resource "aws_iam_role_policy_attachment" "eks_node_ecr" {
 resource "aws_iam_role_policy_attachment" "eks_node_cni" {
   role = aws_iam_role.eks_node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+
+/*
+ * Hosted Zone for personal domain
+ */
+
+module "zones" {
+  source  = "terraform-aws-modules/route53/aws//modules/zones"
+  version = "~> 3.0"
+
+  zones = {
+    for k, _ in var.domains : k => {
+      comment = "Zones for ${k}"
+    }
+  }
+
+  tags = {
+    ManagedBy = "Terraform"
+  }
 }
